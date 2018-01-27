@@ -12,15 +12,18 @@ public class SoundWave : MonoBehaviour
 
     private LineRenderer m_lineRenderer1;
 
-    private float start;
-    private float warpT;
-    private float angle;
-    private float sinAngle;
-    private float sinAngleZ;
-    private double walkShift;
-    private Vector3 posVtx2;
-    private Vector3 posVtxSizeMinusOne;
-    private float ampT;
+    private float m_start;
+    private float m_warpT;
+    private float m_angle;
+    private float m_sinAngle;
+    private float m_sinAngleZ;
+    private double m_walkShift;
+    private Vector3 m_posVtx2;
+    private Vector3 m_posVtxSizeMinusOne;
+    private float m_ampT;
+
+    Vector3 sv;
+    Vector3 ev;
     #endregion
 
     #region Public Variables
@@ -43,7 +46,6 @@ public class SoundWave : MonoBehaviour
     public float walkManual;
     public float walkAuto;
     public bool spiral;
-
     #endregion
 
     #region Private Methods
@@ -82,11 +84,18 @@ public class SoundWave : MonoBehaviour
 
         for (int i = 0; i < size; i++)
         {
-            Vector3 sv = new Vector3(i * .01f, m_waveForm[i] * 10, 0);
-            Vector3 ev = new Vector3(i * .01f, -m_waveForm[i] * 10, 0);
+            //Vector3 sv = new Vector3(i * .01f, m_waveForm[i] * 10, 0);
+            //Vector3 ev = new Vector3(i * .01f, -m_waveForm[i] * 10, 0);
+            sv = new Vector3(i * .01f, m_waveForm[i] * m_ampT * m_warpT, 0);
+            ev = new Vector3(i * .01f, -m_waveForm[i] * m_ampT * m_warpT, 0);
 
-            Debug.DrawLine(sv, ev, Color.yellow);
             SetOrigin();
+            AngleWave(i);
+            WarpOrNot(i);
+            //SetPositionOfVertices(i);
+
+            //if (i == 1) { posVtx2 = new Vector3(length / size * i - start, sinAngle * ampT * warpT, sinAngleZ * ampT * warpT); }
+            //if (i == size - 1) { posVtxSizeMinusOne = new Vector3(length / size * i - start, sinAngle * ampT * warpT, sinAngleZ * ampT * warpT); }
 
             if (i % 2 == 0)
             {
@@ -98,18 +107,62 @@ public class SoundWave : MonoBehaviour
             }
         }
 
+        if (warpInvert)
+        {  //Fixes pinned limits when WarpInverted
+            m_lineRenderer1.SetPosition(0, sv);
+            m_lineRenderer1.SetPosition(size - 1, ev);
+        }
+
         int current = m_audioSource.timeSamples / m_resolution;
         current *= 2;
+        size = current;
 
         Vector3 c = new Vector3(current * .01f, 0, 0);
 
         Debug.DrawLine(c, c + Vector3.up * 10, Color.white);
-        size += 10;
-        for (int i = 0; i < 10; i++)
+    }
+
+    private void AngleWave(int i)
+    {
+        m_angle = (2 * Mathf.PI / size * i * freq);
+        if (centered)
         {
-            m_lineRenderer1.GetPosition(i).Set(0,0,0);
+            m_angle -= freq * Mathf.PI;   //Center
+            if (centCrest)
+            {
+                m_angle -= Mathf.PI / 2;  //Crest/Knot
+            }
         }
-        
+        else { centCrest = false; }
+
+        m_walkShift -= walkAuto / size * Time.deltaTime;
+        m_angle += (float)m_walkShift - walkManual;
+        m_sinAngle = Mathf.Sin(m_angle);
+        if (spiral) { m_sinAngleZ = Mathf.Cos(m_angle); }
+        else { m_sinAngleZ = 0; }
+    }
+
+    private void SetPositionOfVertices(int i)
+    {
+        if (i == 1) { m_posVtx2 = new Vector3(length / size * i - m_start, m_sinAngle * m_ampT * m_warpT, m_sinAngleZ * m_ampT * m_warpT); }
+        if (i == size - 1) { m_posVtxSizeMinusOne = new Vector3(length / size * i - m_start, m_sinAngle * m_ampT * m_warpT, m_sinAngleZ * m_ampT * m_warpT); }
+    }
+
+    private void WarpOrNot(int i)
+    {
+        if (warp)
+        {
+            m_warpT = size - i;
+            m_warpT = m_warpT / size;
+            m_warpT = Mathf.Sin(Mathf.PI * m_warpT * (warpRandom + 1));
+            if (warpInvert) { m_warpT = 1 / m_warpT; }
+            m_lineRenderer1.SetPosition(i, new Vector3(length / size * i - m_start, m_sinAngle * m_ampT * m_warpT, m_sinAngleZ * m_ampT * m_warpT));
+        }
+        else
+        {
+            m_lineRenderer1.SetPosition(i, new Vector3(length / size * i - m_start, m_sinAngle * m_ampT, m_sinAngleZ * m_ampT));
+            warpInvert = false;
+        }
     }
 
     private void UpdateLineRenderer()
@@ -119,6 +172,22 @@ public class SoundWave : MonoBehaviour
 
         TargetOptional();
 
+        WarpRandom();
+        AmplitudeByFrequency();
+
+        if (warp && warpInvert) { m_ampT = m_ampT / 2; }
+    }
+
+    private void AmplitudeByFrequency()
+    {
+        if (ampByFreq) { m_ampT = Mathf.Sin(freq * Mathf.PI); }
+        else { m_ampT = 1; }
+        m_ampT = m_ampT * amp;
+    }
+
+    private void WarpRandom()
+    {
+        if (warpRandom <= 0) { warpRandom = 0; }
         if (size <= 2) { size = 2; }
         m_lineRenderer1.positionCount = size;
     }
@@ -137,8 +206,8 @@ public class SoundWave : MonoBehaviour
 
     private void SetOrigin()
     {
-        if (origin == Origins.Start) { start = 0; }
-        else { start = length / 2; }
+        if (origin == Origins.Start) { m_start = 0; }
+        else { m_start = length / 2; }
     }
 
     #endregion
