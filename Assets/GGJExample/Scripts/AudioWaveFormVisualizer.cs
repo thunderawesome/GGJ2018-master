@@ -13,7 +13,7 @@ public class AudioWaveFormVisualizer : MonoBehaviour
 
     #region Public Variables
     public Shader shader;
-    public Renderer renderer;
+    public Renderer rend;
     public int width = 500; // texture width 
     public int height = 100; // texture height 
     public Color backgroundColor = Color.black;
@@ -28,6 +28,10 @@ public class AudioWaveFormVisualizer : MonoBehaviour
     #region Coroutines
     private IEnumerator Start()
     {
+        if(rend == null)
+        {
+            rend = GameObject.FindWithTag("Trail").GetComponent<Renderer>();
+        }
         m_audioSource = GetComponent<AudioSource>();
         // create the samples array 
         m_samples = new float[size];
@@ -38,7 +42,7 @@ public class AudioWaveFormVisualizer : MonoBehaviour
         Material material = new Material(shader);
         material.mainTexture = m_texture;
 
-        renderer.material = material;
+        rend.material = material;
 
         // create a 'blank screen' image 
         m_blank = new Color[width * height];

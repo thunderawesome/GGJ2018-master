@@ -68,11 +68,6 @@ namespace GoogleARCore.HelloAR
         private bool m_IsQuitting = false;
 
         /// <summary>
-        /// We only want ONE character spawned. So, we need to make a check for that.
-        /// </summary>
-        private bool m_hasCharacterBeenSpawned = false;
-
-        /// <summary>
         /// The Unity Update() method.
         /// </summary>
         public void Update()
@@ -120,36 +115,32 @@ namespace GoogleARCore.HelloAR
 
             SearchingForPlaneUI.SetActive(showSearchingUI);
 
-            if (m_hasCharacterBeenSpawned == false)
+            // If the player has not touched the screen, we are done with this update.
+            Touch touch;
+            if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
             {
-                // If the player has not touched the screen, we are done with this update.
-                Touch touch;
-                if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
-                {
-                    return;
-                }
+                return;
+            }
 
-                TrackableHit hit;
-                TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinBounds | TrackableHitFlags.PlaneWithinPolygon;
-                // Raycast against the location the player touched to search for planes.
-                if (Session.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
-                {
-                    var andyObject = Instantiate(AndyAndroidPrefab, hit.Pose.position, hit.Pose.rotation);
+            // Raycast against the location the player touched to search for planes.
+            TrackableHit hit;
+            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinBounds | TrackableHitFlags.PlaneWithinPolygon;
 
-                    // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
-                    // world evolves.
-                    var anchor = hit.Trackable.CreateAnchor(hit.Pose);
+            if (Session.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+            {
+                var andyObject = Instantiate(AndyAndroidPrefab, hit.Pose.position, hit.Pose.rotation);
 
-                    // Andy should look at the camera but still be flush with the plane.
-                    andyObject.transform.LookAt(FirstPersonCamera.transform);
-                    andyObject.transform.rotation = Quaternion.Euler(0.0f,
-                        andyObject.transform.rotation.eulerAngles.y, andyObject.transform.rotation.z);
+                // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
+                // world evolves.
+                var anchor = hit.Trackable.CreateAnchor(hit.Pose);
 
-                    // Make Andy model a child of the anchor.
-                    andyObject.transform.parent = anchor.transform;
+                // Andy should look at the camera but still be flush with the plane.
+                andyObject.transform.LookAt(FirstPersonCamera.transform);
+                andyObject.transform.rotation = Quaternion.Euler(0.0f,
+                    andyObject.transform.rotation.eulerAngles.y, andyObject.transform.rotation.z);
 
-                    m_hasCharacterBeenSpawned = true;
-                }
+                // Make Andy model a child of the anchor.
+                andyObject.transform.parent = anchor.transform;
             }
         }
 

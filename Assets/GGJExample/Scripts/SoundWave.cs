@@ -133,7 +133,7 @@ public class SoundWave : MonoBehaviour
                 m_lineRenderer.SetPosition(i, ev);
                 
             }
-            m_lineRenderer.transform.position = new Vector3(0, 0, i*lineSegmentSize -6);
+            m_lineRenderer.transform.position = new Vector3((-i) * lineSegmentSize, 0, 0);
         }
 
         if (warpInvert)

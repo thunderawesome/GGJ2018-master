@@ -59,10 +59,10 @@ namespace GoogleARCore
             }
         }
 
-/// <summary>
-/// Gets the center position of the plane.
-/// </summary>
-public Vector3 Position
+        /// <summary>
+        /// Gets the center position of the plane.
+        /// </summary>
+        public Vector3 Position
         {
             get
             {
