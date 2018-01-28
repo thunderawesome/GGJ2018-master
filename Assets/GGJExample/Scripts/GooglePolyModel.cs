@@ -82,7 +82,7 @@ public class GooglePolyModel : MonoBehaviour
         //for (int i = 0; i < Mathf.Min(1, result.Value.assets.Count); i++)
         //{
         // Import this asset.
-        PolyAsset poly = result.Value.assets[Random.Range(0, 15)];
+        PolyAsset poly = result.Value.assets[Random.Range(0, 10)];
         PolyApi.Import(poly, options, ImportAssetCallback);
         assetsInUse.Add(poly);
         //}

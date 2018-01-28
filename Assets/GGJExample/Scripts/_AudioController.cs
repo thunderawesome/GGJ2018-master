@@ -11,6 +11,10 @@ public class _AudioController : MonoBehaviour
     public GameObject audioNode;
 
     public List<GameObject> audioNodes;
+
+    //set these in the inspector!
+    public AudioSource master;
+    public AudioSource[] slaves;
     #endregion
 
     #region Private Variables
@@ -31,7 +35,16 @@ public class _AudioController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        audioNodes = new List<GameObject>();
+    }
+
+
+
+    private void Update()
+    {
+        for (int i = 0; i < slaves.Length; i++)
+        {
+            slaves[i].timeSamples = master.timeSamples;
+        }        
     }
 
     public void SetTrack(AudioSource audioSource)
@@ -39,7 +52,6 @@ public class _AudioController : MonoBehaviour
         try
         {
             audioSource.clip = tracks[m_index];
-            audioSource.Play();
 
         }
         catch (System.Exception)
