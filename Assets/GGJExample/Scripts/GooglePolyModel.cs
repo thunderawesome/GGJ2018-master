@@ -23,7 +23,8 @@ using System.Collections.Generic;
 /// 
 /// This example requests a specific asset and displays it.
 /// </summary>
-public class GooglePolyModel : MonoBehaviour {
+public class GooglePolyModel : MonoBehaviour
+{
 
     // ATTENTION: Before running this example, you must set your API key in Poly Toolkit settings.
     //   1. Click "Poly | Poly Toolkit Settings..."
@@ -37,20 +38,21 @@ public class GooglePolyModel : MonoBehaviour {
     private int assetCount = 0;
 
     // Text field where we display the attributions (credits) for the assets we display.
-    public Text attributionsText;
+    //public Text attributionsText;
 
     // Status bar text.
-    public Text statusText;
+    // public Text statusText;
 
     private void Start()
     {
         // Request a list of featured assets from Poly.
         Debug.Log("Getting featured assets...");
-        statusText.text = "Requesting...";
+        //statusText.text = "Requesting...";
 
-        PolyListAssetsRequest request = PolyListAssetsRequest.Featured();
+        PolyListAssetsRequest request = PolyListAssetsRequest.Latest();
         // Limit requested models to those of medium complexity or lower.
         request.maxComplexity = PolyMaxComplexityFilter.MEDIUM;
+        request.curated = true;
         PolyApi.ListAssets(request, ListAssetsCallback);
     }
 
@@ -60,11 +62,11 @@ public class GooglePolyModel : MonoBehaviour {
         if (!result.Ok)
         {
             Debug.LogError("Failed to get featured assets. :( Reason: " + result.Status);
-            statusText.text = "ERROR: " + result.Status;
+            // statusText.text = "ERROR: " + result.Status;
             return;
         }
         Debug.Log("Successfully got featured assets!");
-        statusText.text = "Importing...";
+        //statusText.text = "Importing...";
 
         // Set the import options.
         PolyImportOptions options = PolyImportOptions.Default();
@@ -77,15 +79,16 @@ public class GooglePolyModel : MonoBehaviour {
 
         // Now let's get the first 5 featured assets and put them on the scene.
         List<PolyAsset> assetsInUse = new List<PolyAsset>();
-        for (int i = 0; i < Mathf.Min(1, result.Value.assets.Count); i++)
-        {
-            // Import this asset.
-            PolyApi.Import(result.Value.assets[i], options, ImportAssetCallback);
-            assetsInUse.Add(result.Value.assets[i]);
-        }
+        //for (int i = 0; i < Mathf.Min(1, result.Value.assets.Count); i++)
+        //{
+        // Import this asset.
+        PolyAsset poly = result.Value.assets[Random.Range(0, 15)];
+        PolyApi.Import(poly, options, ImportAssetCallback);
+        assetsInUse.Add(poly);
+        //}
 
         // Show attributions for the assets we display.
-        attributionsText.text = PolyApi.GenerateAttributions(includeStatic: true, runtimeAssets: assetsInUse);
+        // attributionsText.text = PolyApi.GenerateAttributions(includeStatic: true, runtimeAssets: assetsInUse);
     }
 
     // Callback invoked when an asset has just been imported.
@@ -102,7 +105,10 @@ public class GooglePolyModel : MonoBehaviour {
         //result.Value.gameObject.transform.position = new Vector3(assetCount * 1.5f, 0f, 0f);
         result.Value.gameObject.transform.parent = transform.GetChild(0);
         result.Value.gameObject.transform.localPosition = Vector3.zero;
+        AudioSource audioSource = result.Value.gameObject.transform.parent.GetComponent<AudioSource>();
+        //_AudioController.Instance.SetTrack(audioSource);
+        audioSource.volume = 1;
 
-        statusText.text = "Imported " + assetCount + " assets";
+        // statusText.text = "Imported " + assetCount + " assets";
     }
 }

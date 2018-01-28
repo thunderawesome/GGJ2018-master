@@ -57,7 +57,6 @@ public class SoundWave : MonoBehaviour
         m_lineRenderer.material = traceMaterial;
 
         m_audioSource = GetComponent<AudioSource>();
-        _AudioController.Instance.SetTrack(m_audioSource);
 
         m_resolution = m_audioSource.clip.frequency / m_resolution;
 
