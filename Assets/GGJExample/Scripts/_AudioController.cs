@@ -37,8 +37,6 @@ public class _AudioController : MonoBehaviour
         Instance = this;
     }
 
-
-
     private void Update()
     {
         for (int i = 0; i < slaves.Length; i++)
@@ -67,7 +65,7 @@ public class _AudioController : MonoBehaviour
         {
             CurrentAudioNode.transform.parent = null;
             m_index++;
-            if (m_index >= tracks.Length) m_index = 0;
+            if (m_index >= audioNodes.Count) m_index = 0;
 
         }
         catch (System.Exception)

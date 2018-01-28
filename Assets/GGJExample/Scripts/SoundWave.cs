@@ -61,7 +61,7 @@ public class SoundWave : MonoBehaviour
         m_resolution = m_audioSource.clip.frequency / m_resolution;
 
         m_samples = new float[m_audioSource.clip.samples * m_audioSource.clip.channels];
-        m_audioSource.clip.GetData(m_samples, 0);
+        AudioListener.GetOutputData(m_samples, 0);
 
         m_waveForm = new float[(m_samples.Length / m_resolution)];
         for (int i = 0; i < m_waveForm.Length; i++)
@@ -80,7 +80,12 @@ public class SoundWave : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (size > m_waveForm.Length || _GameManager.Instance.isMusicPlaying == false) return;
+        if ( _GameManager.Instance.isMusicPlaying == false) return;
+
+        if(size > m_waveForm.Length)
+        {
+            size = 0;
+        }
         UpdateLineRenderer();
     }
 
@@ -109,8 +114,6 @@ public class SoundWave : MonoBehaviour
         m_lineRenderer.startWidth = traceWidth;
         m_lineRenderer.endWidth = traceWidth;
 
-
-
         if (size <= 2) { size = 2; }
         m_lineRenderer.positionCount = size;
 
@@ -133,7 +136,6 @@ public class SoundWave : MonoBehaviour
             else
             {
                 m_lineRenderer.SetPosition(i, ev);
-
             }
         }
 

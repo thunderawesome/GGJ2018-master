@@ -52,6 +52,8 @@ public class GooglePolyModel : MonoBehaviour
         PolyListAssetsRequest request = PolyListAssetsRequest.Latest();
         // Limit requested models to those of medium complexity or lower.
         request.maxComplexity = PolyMaxComplexityFilter.MEDIUM;
+        //request.category = PolyCategory.OBJECTS;
+        request.keywords = "dj";
         request.curated = true;
         PolyApi.ListAssets(request, ListAssetsCallback);
     }
@@ -105,9 +107,14 @@ public class GooglePolyModel : MonoBehaviour
         //result.Value.gameObject.transform.position = new Vector3(assetCount * 1.5f, 0f, 0f);
         result.Value.gameObject.transform.parent = transform.GetChild(0);
         result.Value.gameObject.transform.localPosition = Vector3.zero;
-        AudioSource audioSource = result.Value.gameObject.transform.parent.GetComponent<AudioSource>();
+        //AudioSource audioSource = result.Value.gameObject.transform.parent.GetComponents<AudioSource>();
         //_AudioController.Instance.SetTrack(audioSource);
-        audioSource.volume = 1;
+
+        for (int i = 0; i < _AudioController.Instance.slaves.Length; i++)
+        {
+            _AudioController.Instance.slaves[i].volume = 1;
+            _AudioController.Instance.slaves[i].spatialBlend = 0;
+        }
 
         // statusText.text = "Imported " + assetCount + " assets";
     }

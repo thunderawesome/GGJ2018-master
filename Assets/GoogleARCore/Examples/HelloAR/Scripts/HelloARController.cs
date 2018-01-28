@@ -143,6 +143,7 @@ namespace GoogleARCore.HelloAR
                 // Make Andy model a child of the anchor.
                 andyObject.transform.parent = anchor.transform;
                 andyObject.transform.localPosition = Vector3.zero;
+                andyObject.transform.parent = null;
             }
         }
 
