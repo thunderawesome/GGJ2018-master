@@ -39,7 +39,6 @@ GameObject:
   - component: {fileID: 33340294062673050}
   - component: {fileID: 23646549736039258}
   - component: {fileID: 114776205485222536}
-  - component: {fileID: 114557515589300246}
   m_Layer: 0
   m_Name: TrackedPlaneVisualizer
   m_TagString: Untagged
@@ -157,17 +156,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1160229486543432}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114557515589300246
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1654175882956584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e038bf700cfa444fb16c6ef963be9f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114776205485222536
 MonoBehaviour:
   m_ObjectHideFlags: 1
