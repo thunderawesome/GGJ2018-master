@@ -37,7 +37,9 @@ public class AudioWaveFormVisualizer : MonoBehaviour
         m_samples = new float[size];
 
         // create the texture and assign to the guiTexture: 
-        m_texture = new Texture2D(width, height);
+        m_texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        m_texture.wrapMode = TextureWrapMode.Repeat;
+        m_texture.filterMode = FilterMode.Point;
 
         Material material = new Material(shader);
         material.mainTexture = m_texture;

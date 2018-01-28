@@ -14,11 +14,9 @@ public class SoundWave : MonoBehaviour
 
     private float m_start;
     private float m_warpT;
-    private float m_angle;
-    private float m_sinAngle;
-    private float m_sinAngleZ;
-    private double m_walkShift;
     private float m_ampT;
+
+    private Vector3 m_direction;
 
     Vector3 sv;
     Vector3 ev;
@@ -48,8 +46,6 @@ public class SoundWave : MonoBehaviour
     public float walkManual;
     public float walkAuto;
     public bool spiral;
-
-    public Vector3 offset;
     #endregion
 
     #region Private Methods
@@ -61,6 +57,8 @@ public class SoundWave : MonoBehaviour
         m_lineRenderer.material = traceMaterial;
 
         m_audioSource = GetComponent<AudioSource>();
+        _AudioController.Instance.SetTrack(m_audioSource);
+
         m_resolution = m_audioSource.clip.frequency / m_resolution;
 
         m_samples = new float[m_audioSource.clip.samples * m_audioSource.clip.channels];
@@ -87,6 +85,11 @@ public class SoundWave : MonoBehaviour
         UpdateLineRenderer();
     }
 
+    private void LateUpdate()
+    {
+        TargetOptional();
+    }
+
     private void WarpOrNot(int i)
     {
         if (warp)
@@ -107,7 +110,7 @@ public class SoundWave : MonoBehaviour
         m_lineRenderer.startWidth = traceWidth;
         m_lineRenderer.endWidth = traceWidth;
 
-        TargetOptional();
+
 
         if (size <= 2) { size = 2; }
         m_lineRenderer.positionCount = size;
@@ -118,8 +121,8 @@ public class SoundWave : MonoBehaviour
 
         for (int i = 0; i < size; i++)
         {
-            sv = new Vector3(i * lineSegmentSize, m_waveForm[i] * m_ampT * m_warpT, 0);
-            ev = new Vector3(i * lineSegmentSize, -m_waveForm[i] * m_ampT * m_warpT, 0);
+            sv = new Vector3((i) * lineSegmentSize, m_waveForm[i] * m_ampT * m_warpT, 0);
+            ev = new Vector3((i) * lineSegmentSize, -m_waveForm[i] * m_ampT * m_warpT, 0);
 
             SetOrigin();
             WarpOrNot(i);
@@ -131,9 +134,8 @@ public class SoundWave : MonoBehaviour
             else
             {
                 m_lineRenderer.SetPosition(i, ev);
-                
+
             }
-            m_lineRenderer.transform.position = new Vector3((-i) * lineSegmentSize, 0, 0);
         }
 
         if (warpInvert)
@@ -164,10 +166,10 @@ public class SoundWave : MonoBehaviour
         if (targetOptional != null)
         {
             origin = Origins.Start;
-            length = (transform.position - targetOptional.transform.position).magnitude;
-
-            transform.LookAt(targetOptional.transform.position + offset);
-            transform.Rotate(altRotation, -90, 0);
+            m_direction = (transform.position - targetOptional.transform.position);
+            length = m_direction.magnitude;
+            m_lineRenderer.transform.LookAt(targetOptional.transform.position);
+            m_lineRenderer.transform.Rotate(altRotation, -90, 0);
         }
     }
 
