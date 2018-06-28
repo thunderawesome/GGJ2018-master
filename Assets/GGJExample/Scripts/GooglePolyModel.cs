@@ -113,7 +113,7 @@ public class GooglePolyModel : MonoBehaviour
         for (int i = 0; i < _AudioController.Instance.slaves.Length; i++)
         {
             _AudioController.Instance.slaves[i].volume = 1;
-            _AudioController.Instance.slaves[i].spatialBlend = 0;
+            //_AudioController.Instance.slaves[i].spatialBlend = 0;
         }
 
         // statusText.text = "Imported " + assetCount + " assets";

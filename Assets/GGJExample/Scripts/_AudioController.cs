@@ -15,6 +15,8 @@ public class _AudioController : MonoBehaviour
     //set these in the inspector!
     public AudioSource master;
     public AudioSource[] slaves;
+
+    public GameObject[] visualsFX;
     #endregion
 
     #region Private Variables
@@ -64,6 +66,8 @@ public class _AudioController : MonoBehaviour
         try
         {
             CurrentAudioNode.transform.parent = null;
+            Debug.Log("VisualFX " + m_index + " ACTIVE");
+            visualsFX[m_index].SetActive(true);
             m_index++;
             if (m_index >= audioNodes.Count) m_index = 0;
 

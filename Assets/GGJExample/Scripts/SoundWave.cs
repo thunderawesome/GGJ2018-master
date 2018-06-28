@@ -148,9 +148,9 @@ public class SoundWave : MonoBehaviour
         current *= 2;
         size = current;
 
-        Vector3 c = new Vector3(current * .01f, 0, 0);
+       // Vector3 c = new Vector3(current * .01f, 0, 0);
 
-        Debug.DrawLine(c, c + Vector3.up * 10, Color.white);
+       // Debug.DrawLine(c, c + Vector3.up * 10, Color.white);
 
         LerpColors();
     }
